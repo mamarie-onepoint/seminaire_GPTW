@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil de Transformateur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F5F5F7;
+            color: #1D1D1F;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+        .btn-apple {
+            background-color: #0071E3;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+        }
+        .btn-apple:hover {
+            background-color: #0077ED;
+            transform: scale(1.02);
+        }
+        .btn-secondary {
+            background-color: #E8E8ED;
+            color: #1D1D1F;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #D2D2D7;
+        }
+        .option-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .option-card:active {
+            transform: scale(0.98);
+            background-color: rgba(0, 113, 227, 0.1);
+        }
+        .step-transition {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .hidden-step {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        canvas#teamRadar {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .score-bar-bg {
+            background: #E8E8ED;
+            height: 8px;
+            border-radius: 4px;
+        }
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-12 px-4">
+    <div class="max-w-3xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 id="main-title" class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-slate-900">Mon profil de transformateur</h1>
+            <p id="main-subtitle" class="text-lg text-gray-500 font-medium max-w-2xl mx-auto leading-relaxed">
+                Au-delà de vos compétences techniques, quelle est votre véritable valeur ajoutée en période de changement ? Faites le test pour découvrir votre rôle naturel et l'équilibre de votre équipe.
+            </p>
+        </header>
+
+        <main id="app-container" class="glass-card p-8 md:p-12">
+            
+            <section id="step-1" class="step-transition">
+                <div class="flex justify-between items-center mb-8">
+                    <button id="btn-back" onclick="previousQuestion()" class="btn-secondary px-4 py-2 text-xs font-semibold flex items-center invisible">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        Retour
+                    </button>
+                    <div class="flex items-center space-x-4">
+                        <span id="question-counter" class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Question 1 sur 10</span>
+                        <div class="w-24 h-1 bg-gray-100 rounded-full overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 10%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="question-content">
+                    <h2 id="question-text" class="text-2xl font-semibold mb-8 leading-tight">Chargement...</h2>
+                    <div id="options-container" class="space-y-4"></div>
+                </div>
+            </section>
+
+            <section id="step-2" class="step-transition hidden-step">
+                <div id="capture-area" class="bg-white p-8 rounded-3xl mb-6 border border-gray-50">
+                    <div class="text-center mb-8">
+                        <div class="inline-block p-4 rounded-full bg-blue-50 mb-4">
+                            <span id="result-icon" class="text-5xl">🧭</span>
+                        </div>
+                        <h2 class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Mon Profil Dominant</h2>
+                        <h3 id="result-title" class="text-3xl font-bold text-slate-900">Le Visionnaire</h3>
+                        <p id="result-subtitle" class="text-gray-500 italic mt-2">"Celui qui donne du sens au chaos"</p>
+                    </div>
+
+                    <div class="space-y-6 text-gray-700">
+                        <div class="p-6 bg-gray-50 rounded-2xl">
+                            <h4 class="font-bold mb-2 text-blue-600">Description</h4>
+                            <p id="result-description" class="text-sm leading-relaxed"></p>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="p-5 border border-gray-100 rounded-2xl">
+                                <h4 class="font-bold mb-2 text-sm uppercase text-gray-400 tracking-wide">Place dans la transformation</h4>
+                                <p id="result-place" class="text-xs leading-relaxed"></p>
+                            </div>
+                            <div class="p-5 bg-blue-600 text-white rounded-2xl">
+                                <h4 class="font-bold mb-2 text-sm uppercase opacity-70 tracking-wide">Rôle clé</h4>
+                                <p id="result-role" class="text-xs leading-relaxed font-medium"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4">
+                            <h4 class="font-bold mb-4 text-sm uppercase tracking-wide text-gray-400">Analyse détaillée de vos polarités</h4>
+                            <div id="scores-details" class="space-y-4">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                    <button onclick="downloadProfile()" class="btn-secondary py-4 font-semibold flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Télécharger en PNG
+                    </button>
+                    <button onclick="goToStep3()" class="btn-apple py-4 font-semibold shadow-lg shadow-blue-200">
+                        Analyse Collective
+                    </button>
+                </div>
+            </section>
+
+            <section id="step-3" class="step-transition hidden-step">
+                <p class="text-gray-500 mb-8 text-sm text-center">Entrez la répartition des profils dans votre groupe pour visualiser la dynamique collective sur le radar.</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                        <label class="block text-[10px] font-bold uppercase mb-2 text-gray-400">Visionnaires</label>
+                        <input type="number" id="count-V" min="0" value="0" onchange="updateRadar()" class="w-full text-center bg-transparent text-xl font-bold outline-none">
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                        <label class="block text-[10px] font-bold uppercase mb-2 text-gray-400">Connecteurs</label>
+                        <input type="number" id="count-C" min="0" value="0" onchange="updateRadar()" class="w-full text-center bg-transparent text-xl font-bold outline-none">
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                        <label class="block text-[10px] font-bold uppercase mb-2 text-gray-400">Pionniers</label>
+                        <input type="number" id="count-P" min="0" value="0" onchange="updateRadar()" class="w-full text-center bg-transparent text-xl font-bold outline-none">
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                        <label class="block text-[10px] font-bold uppercase mb-2 text-gray-400">Architectes</label>
+                        <input type="number" id="count-A" min="0" value="0" onchange="updateRadar()" class="w-full text-center bg-transparent text-xl font-bold outline-none">
+                    </div>
+                </div>
+
+                <div class="mb-10 py-6 bg-white rounded-3xl border border-gray-100 flex justify-center">
+                    <div class="w-full max-w-[400px]">
+                        <canvas id="teamRadar"></canvas>
+                    </div>
+                </div>
+
+                <div id="team-analysis-result" class="space-y-6">
+                    <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                        <h3 id="team-type-title" class="text-xl font-bold text-blue-800 mb-2">Résultat de l'analyse</h3>
+                        <div class="space-y-3 text-sm">
+                            <p><strong>Points forts :</strong> <span id="team-strengths" class="text-gray-700">Ajustez les chiffres pour obtenir une analyse.</span></p>
+                            <p><strong>Axes d'attention :</strong> <span id="team-risks" class="text-gray-700">...</span></p>
+                            <div class="bg-white p-4 rounded-xl border border-blue-200 mt-4">
+                                <p class="text-blue-800 font-bold mb-1">Conseil d'analyse</p>
+                                <p id="team-advice" class="text-gray-800 italic"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="missing-alert" class="p-6 bg-red-50 rounded-2xl border border-red-100 hidden">
+                        <h4 class="text-red-800 font-bold mb-3 flex items-center">
+                            <span class="mr-2">⚠️</span> Profil(s) Manquant(s) (Alerte rouge)
+                        </h4>
+                        <ul id="missing-list" class="space-y-2 text-sm text-red-700"></ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "1. Un nouveau projet transverse est lancé sans process défini. Quelle est votre première réaction ?", options: [{ text: "Je regarde tout de suite qui, dans les autres services, doit être mis dans la boucle.", type: "C" }, { text: "Je commence à poser les jalons et à créer un dossier partagé structuré.", type: "A" }, { text: "J'essaie de comprendre comment ce projet s'inscrit dans la stratégie globale.", type: "V" }, { text: "C'est l'occasion idéale de tester une nouvelle méthode de travail agile.", type: "P" }] },
+            { q: "2. Le lundi matin à la machine à café, qu'est-ce qui vous enthousiasme le plus de partager sur le grand projet de transformation actuel ?", options: [{ text: "Le tout nouvel outil que je viens de tester et qui va simplifier nos processus.", type: "P" }, { text: "Les retours positifs des collègues et la façon dont l'équipe se rassemble et s'entraide autour de ce changement.", type: "C" }, { text: "La clarté et la qualité de la gestion de projet pour sécuriser les objectifs du projet.", type: "A" }, { text: "L’impact positif à long terme que ce projet va avoir sur l'avenir de l'entreprise et notre marché.", type: "V" }] },
+            { q: "3. Face à une période de surcharge ou de flou, quel est votre réflexe ?", options: [{ text: "Clarifier la charge pour redonner à chacun de la visibilité et de la sérennité.", type: "A" }, { text: "Prendre de la hauteur et rappeler la finalité du projet pour redonner à l'équipe le sens de cet effort.", type: "V" }, { text: "Fédérer l’équipe autour d’un élan d’entraide et s’assurer que chacun ne reste pas isolé face aux difficultés.", type: "C" }, { text: "Tester une approche plus agile ou un raccourci audacieux afin de débloquer rapidement la situation.", type: "P" }] },
+            { q: "4. Dans le cadre d'un projet de transformation, quel est votre \"outil\" ou support de prédilection pour faire avancer les choses ?", options: [{ text: "Les canaux de communication collaboratifs (Slack, Teams, ateliers) pour mobiliser l'intelligence collective, croiser les regards et aligner les équipes.", type: "C" }, { text: "Une solution technologique émergente ou une version bêta innovante pour expérimenter de nouvelles manières de travailler et tester le terrain.", type: "P" }, { text: "Un tableau blanc (physique ou digital comme Miro) pour modéliser la vision globale et donner du sens aux concepts.", type: "V" }, { text: "Un tableau de bord ou un outil de pilotage (Excel avancé, ERP, roadmap) parfaitement structuré pour suivre les indicateurs de succès et sécuriser le déploiement.", type: "A" }] },
+            { q: "5. Dans une réunion de brainstorming, vous êtes celui/celle qui :", options: [{ text: "Dit : \"On devrait demander l'avis de l'équipe commerciale, ça les concerne !\"", type: "C" }, { text: "Relie les idées entre elles pour en faire une vision inspirante.", type: "V" }, { text: "Demande : \"Concrètement, comment on décline ça de façon sécurisée ?\"", type: "A" }, { text: "Lance les idées les plus folles, même si elles paraissent risquées.", type: "P" }] },
+            { q: "6. Qu'est-ce qui vous agace le plus lorsque vous entrez dans une phase de transformation ?", options: [{ text: "La peur de l'échec qui bloque toute prise de risque.", type: "P" }, { text: "Le manque de perspective et d'ambition.", type: "V" }, { text: "Le désordre et l'absence de règles établies.", type: "A" }, { text: "Les gens qui travaillent dans leur coin sans communiquer.", type: "C" }] },
+            { q: "7. Si vous deviez définir votre \"super-pouvoir\" en équipe :", options: [{ text: "Je sais redonner de l'énergie quand l'horizon est bouché.", type: "V" }, { text: "Avec moi, les dossiers sont structurés et rien n'est oublié.", type: "A" }, { text: "Je connais tout le monde et je sais qui peut aider qui.", type: "C" }, { text: "Je ne m'ennuie jamais, je trouve toujours une nouvelle piste.", type: "P" }] },
+            { q: "8. On vous informe du déménagement prochain de votre entreprise dans un nouvel arrondissement. Quelle est votre réaction ?", options: [{ text: "« C'est l'opportunité parfaite pour repenser nos modes de travail et expérimenter de nouveaux aménagements plus dynamiques. »", type: "P" }, { text: "« C'est un beau projet. Anticipons le transfert et l'organisation des nouveaux espaces pour que la transition se fasse sans accroc. »", type: "A" }, { text: "« C'est le moment idéal pour insuffler une nouvelle dynamique et incarner concrètement les ambitions futures de l'entreprise. »", type: "V" }, { text: "« Ces nouveaux espaces vont nous permettre de créer des lieux de partage plus chaleureux et de décloisonner les équipes. »", type: "C" }] },
+            { q: "9. Quel compliment vous fait le plus plaisir ?", options: [{ text: "\"On peut compter sur toi, tu es robuste et fiable.\"", type: "A" }, { text: "\"Tu as une vision très claire de là où on va, ça m’aide.\"", type: "V" }, { text: "\"Tu es toujours à la pointe, tu nous pousses à évoluer.\"", type: "P" }, { text: "\"Grâce à toi, tout le monde travaille bien ensemble.\"", type: "C" }] },
+            { q: "10. Votre devise secrète au travail :", options: [{ text: "\"Seul on va plus vite, ensemble on va plus loin.\"", type: "C" }, { text: "\"La confiance n'exclut pas le contrôle.\"", type: "A" }, { text: "\"Là où il y a une volonté, il y a un chemin.\"", type: "V" }, { text: "\"Si vous ne l'avez jamais fait, c'est qu'il faut essayer.\"", type: "P" }] }
+        ];
+
+        const profiles = {
+            V: { 
+                title: "Le Visionnaire", icon: "🧭", color: "#0071E3", 
+                subtitle: "Celui qui donne du sens au chaos", 
+                description: "Le Visionnaire possède une boussole interne. Là où les autres voient de la confusion ou des problèmes techniques, il voit une destination. Il est capable de synthétiser des informations complexes pour en extraire une direction claire. C’est celui qui, dans une petite structure, rappelle sans cesse \"le pourquoi\" des projets pour éviter que l'équipe ne s'épuise dans l'opérationnel pur.",
+                place: "En amont : Il définit le cap et l'ambition. Pendant : Il est le garde-fou du sens. Si le projet dévie, il tire la sonnette d'alarme.",
+                role: "Inspirer et rassurer. Il transforme l'incertitude en une aventure collective cohérente."
+            },
+            C: { 
+                title: "Le Connecteur", icon: "🤝", color: "#34C759", 
+                subtitle: "Le créateur de lien qui perce les silos", 
+                description: "Le Connecteur est le \"ciment\" social et opérationnel de l'entreprise. Il a une vision horizontale : il sait naturellement qui détient l'information et qui doit parler à qui. Il est celui qui s'assure que les services se parlent et que personne ne reste isolé dans sa bulle. Il privilégie l'humain et l'intelligence collective.",
+                place: "En amont : Il identifie les parties prenantes et crée l'adhésion. Pendant : Il fluidifie la communication et désamorce les conflits entre services.",
+                role: "Fédérer. Il transforme une addition d'individus en une équipe soudée et collaborative."
+            },
+            P: { 
+                title: "Le Pionnier", icon: "🚀", color: "#FF9500", 
+                subtitle: "L’amoureux du changement et de l’innovation", 
+                description: "Le Pionnier est curieux de nature. Il déteste le \"on a toujours fait comme ça\". Il est à l'affût des nouveaux outils, des nouvelles méthodes de travail et des opportunités de rupture. Il n'a pas peur de l'échec car pour lui, une erreur est simplement une donnée supplémentaire pour réussir le coup d'après. C’est l'éclaireur de l'organisation.",
+                place: "En amont : Il apporte les idées neuves et teste les premiers prototypes (le \"Early Adopter\"). Pendant : Il maintient l'élan et l'enthousiasme face à la nouveauté.",
+                role: "Oser. Il transforme l'inertie en mouvement et pousse l'entreprise à se réinventer sans cesse."
+            },
+            A: { 
+                title: "L'Architecte", icon: "📐", color: "#5856D6", 
+                subtitle: "Le garant de la gouvernance et de la structure", 
+                description: "L'Architecte transforme l'idée en réalité tangible et durable. Il aime l'ordre, les processus clairs et la sécurité. Pour lui, une transformation n'est réussie que si elle est robuste et mesurable. Il est le garant de la qualité et du respect des engagements. Il apporte la stabilité nécessaire pour que l'innovation ne devienne pas un désordre généralisé.",
+                place: "En amont : Il évalue la faisabilité et organise le plan d'action (méthode, planning, outils). Pendant : Il structure les étapes et s'assure que les bases de l'entreprise restent solides malgré les changements.",
+                role: "Sécuriser. Il transforme l'enthousiasme des autres en résultats concrets, fiables et reproductibles."
+            }
+        };
+
+        const teamProfiles = [
+            { id: "balanced", title: "Le Profil Équilibré (La Dream Team)", strengths: "L'entreprise est complète. Elle peut rêver (Visionnaire), inventer (Pionnier), lier (Connecteur) et stabiliser (Architecte).", risks: "Le risque majeur est la lenteur de décision. Trop de profils différents peuvent créer des débats sans fin.", advice: "Assurez-vous que chacun connaît le rôle de l'autre pour éviter les frustrations (ex: l'Architecte qui freine le Pionnier)." },
+            { id: "thinkers", title: "Le Profil 'Tête pensante' (Majorité de Visionnaires et/ou de Pionniers)", strengths: "Énorme capacité d'innovation, enthousiasme, agilité et créativité. L'entreprise est toujours en mouvement.", risks: "Le risque de \"burn-out de projet\". On lance 10 idées mais on n'en finit aucune. Manque de rigueur et de suivi.", advice: "Attention à l'éparpillement. Il est urgent de valoriser les rares Architectes du groupe pour transformer vos idées en résultats concrets." },
+            { id: "family", title: "Le Profil 'Famille' (Majorité de Connecteurs)", strengths: "Ambiance exceptionnelle, solidarité, entraide. Très peu de conflits ouverts.", risks: "Le risque du consensus mou. On n'ose pas se dire les choses qui fâchent pour ne pas briser le lien. Manque de direction claire ou de structure.", advice: "Ne confondez pas 'bonne ambiance' et 'efficacité'. Le groupe doit apprendre à challenger les idées et à accepter la confrontation constructive." },
+            { id: "fortress", title: "Le Profil 'Forteresse' (Excès d'Architectes)", strengths: "Organisation millimétrée, fiabilité totale, maîtrise des risques et des coûts.", risks: "La rigidité. L'entreprise peut devenir une administration lourde, incapable de s'adapter au changement ou de créer de l'émotion.", advice: "Lâchez prise ! Autorisez-vous des phases de test 'sales et rapides' sans chercher la perfection immédiate pour ne pas vous laisser dépasser par le marché." }
+        ];
+
+        let currentQuestion = 0;
+        let scores = { V: 0, C: 0, P: 0, A: 0 };
+        let selectionsHistory = []; // Historique pour le bouton Retour
+        let radarChart = null;
+
+        function renderQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question-counter').innerText = `Question ${currentQuestion + 1} sur 10`;
+            document.getElementById('progress-bar').style.width = `${(currentQuestion + 1) * 10}%`;
+            document.getElementById('question-text').innerText = question.q;
+            
+            // Gestion de la visibilité du bouton Retour
+            const backBtn = document.getElementById('btn-back');
+            if (currentQuestion > 0) {
+                backBtn.classList.remove('invisible');
+            } else {
+                backBtn.classList.add('invisible');
+            }
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            question.options.forEach((opt, idx) => {
+                const card = document.createElement('div');
+                card.className = 'option-card glass-card p-5 flex items-center bg-white hover:bg-gray-50';
+                card.innerHTML = `
+                    <div class="w-8 h-8 rounded-full border-2 border-gray-200 flex items-center justify-center mr-4 flex-shrink-0 bg-white text-xs font-bold text-gray-400">
+                        ${String.fromCharCode(65 + idx)}
+                    </div>
+                    <p class="text-sm font-medium">${opt.text}</p>
+                `;
+                card.onclick = () => {
+                    // Sauvegarde du choix pour permettre le retour en arrière
+                    selectionsHistory.push(opt.type);
+                    scores[opt.type]++;
+                    currentQuestion++;
+                    
+                    if(currentQuestion < questions.length) {
+                        renderQuestion();
+                    } else {
+                        showResult();
+                    }
+                };
+                container.appendChild(card);
+            });
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                const lastType = selectionsHistory.pop();
+                if (lastType) {
+                    scores[lastType]--; // Annule le score précédent
+                }
+                renderQuestion();
+            }
+        }
+
+        function showResult() {
+            let maxScore = -1;
+            let winner = 'V';
+            for (let type in scores) {
+                if(scores[type] > maxScore) {
+                    maxScore = scores[type];
+                    winner = type;
+                }
+            }
+
+            const profile = profiles[winner];
+            document.getElementById('result-icon').innerText = profile.icon;
+            document.getElementById('result-title').innerText = profile.title;
+            document.getElementById('result-subtitle').innerText = `"${profile.subtitle}"`;
+            document.getElementById('result-description').innerText = profile.description;
+            document.getElementById('result-place').innerText = profile.place;
+            document.getElementById('result-role').innerText = profile.role;
+
+            // Rendu des % détaillés
+            const scoresContainer = document.getElementById('scores-details');
+            scoresContainer.innerHTML = '';
+            const total = 10;
+
+            Object.entries(scores).forEach(([type, val]) => {
+                const pct = (val / total) * 100;
+                const pInfo = profiles[type];
+                scoresContainer.innerHTML += `
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span>${pInfo.title}</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="score-bar-bg">
+                            <div class="score-bar-fill" style="width: ${pct}%; background-color: ${pInfo.color}"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            transitionTo('step-1', 'step-2');
+        }
+
+        function downloadProfile() {
+            const area = document.getElementById('capture-area');
+            html2canvas(area, { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Mon_Profil_Transformateur.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function updateRadar() {
+            const v = parseInt(document.getElementById('count-V').value) || 0;
+            const c = parseInt(document.getElementById('count-C').value) || 0;
+            const p = parseInt(document.getElementById('count-P').value) || 0;
+            const a = parseInt(document.getElementById('count-A').value) || 0;
+            
+            const data = [v, c, p, a];
+            
+            if (radarChart) {
+                radarChart.data.datasets[0].data = data;
+                radarChart.update();
+            } else {
+                const ctx = document.getElementById('teamRadar').getContext('2d');
+                radarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Visionnaires', 'Connecteurs', 'Pionniers', 'Architectes'],
+                        datasets: [{
+                            label: 'Répartition Équipe',
+                            data: data,
+                            backgroundColor: 'rgba(0, 113, 227, 0.2)',
+                            borderColor: '#0071E3',
+                            pointBackgroundColor: '#0071E3',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: { beginAtZero: true, ticks: { display: false } }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+            
+            const total = v + c + p + a;
+            if(total > 0) {
+                let res = teamProfiles[0];
+                if((v+p)/total > 0.5) res = teamProfiles[1];
+                else if(c/total > 0.5) res = teamProfiles[2];
+                else if(a/total > 0.5) res = teamProfiles[3];
+
+                document.getElementById('team-type-title').innerText = res.title;
+                document.getElementById('team-strengths').innerText = res.strengths;
+                document.getElementById('team-risks').innerText = res.risks;
+                document.getElementById('team-advice').innerText = res.advice;
+
+                const list = document.getElementById('missing-list');
+                list.innerHTML = '';
+                let missing = false;
+                if(v === 0) { list.innerHTML += "<li><strong>Zéro Visionnaire :</strong> Danger de perte de motivation (on fait, mais on ne sait plus pourquoi).</li>"; missing = true; }
+                if(c === 0) { list.innerHTML += "<li><strong>Zéro Connecteur :</strong> Danger de création de clans ou d'isolement.</li>"; missing = true; }
+                if(p === 0) { list.innerHTML += "<li><strong>Zéro Pionnier :</strong> Danger d'obsolescence (on fait bien, mais on fait toujours la même chose).</li>"; missing = true; }
+                if(a === 0) { list.innerHTML += "<li><strong>Zéro Architecte :</strong> Danger de chaos opérationnel imminent.</li>"; missing = true; }
+                
+                document.getElementById('missing-alert').classList.toggle('hidden', !missing);
+            }
+        }
+
+        function goToStep3() {
+            // Changement des titres globaux pour l'analyse collective
+            document.getElementById('main-title').innerText = "Analyse du profil collectif";
+            document.getElementById('main-subtitle').innerText = "Visualisez la dynamique et l'équilibre global de votre équipe pour mieux collaborer face au changement.";
+            
+            transitionTo('step-2', 'step-3');
+            setTimeout(updateRadar, 500);
+        }
+
+        function transitionTo(fromId, toId) {
+            const from = document.getElementById(fromId);
+            const to = document.getElementById(toId);
+            from.style.opacity = '0';
+            from.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                from.classList.add('hidden-step');
+                to.classList.remove('hidden-step');
+                to.offsetHeight;
+                to.style.opacity = '1';
+                to.style.transform = 'translateY(0)';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 400);
+        }
+
+        window.onload = renderQuestion;
+    </script>
+</body>
+</html>
