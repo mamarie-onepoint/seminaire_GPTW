@@ -446,7 +446,7 @@ function showResult() {
         });
     }
     
-    const total = v + c + p + a;
+    const total = Number(v) + Number(c) + Number(p) + Number(a);
     if(total > 0) {
         // 1. Classement des profils pour identifier la dynamique majeure
         const teamScores = [
