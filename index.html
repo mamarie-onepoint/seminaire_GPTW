@@ -470,7 +470,8 @@ function showResult() {
             archetypeTitle = "Équipe Polarisée / Double Moteur";
             strengths = `Équilibre puissant et coexistence de deux forces majeures : les ${primary.name}s et les ${secondary.name}s. L'équipe possède un double moteur pour avancer.`;
             risks = `Risque de dualité ou de création de deux "clans" distincts au sein du groupe lors des prises de décisions. Les deux polarités peuvent se neutraliser si elles ne communiquent pas de manière fluide.`;
-        else if (primary.count > parseFloat(total * 0.4)) {
+       }
+            else if (primary.count > parseFloat(total * 0.4)) {
             if (primary.type === 'V') {
                 archetypeTitle = "Équipe Inspirée / En quête de sens";
                 strengths = "Capacité unique à comprendre les enjeux, à anticiper l'avenir et à donner une direction claire aux projets.";
