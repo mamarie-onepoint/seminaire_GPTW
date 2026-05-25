@@ -460,12 +460,18 @@ function showResult() {
         
         const primary = teamScores[0];
         const secondary = teamScores[1];
+        const tertiary = teamScores[2];
         
         let archetypeTitle = "Équipe Polyvalente";
         let strengths = "Grande agilité. L'équipe dispose de toutes les forces nécessaires pour imaginer, structurer, lier et déployer le changement.";
         let risks = "Risque de débats prolongés. Les profils étant très répartis, les prises de décision peuvent être ralenties par manque de leadership naturel sur une polarité.";
         let workshopIdea = "";
 
+        if (primary.count === secondary.count && secondary.count === tertiary.count && primary.count > 0) {
+            archetypeTitle = "Équipe Polyvalente / Équilibrée";
+            strengths = "Grande agilité culturelle. L'équipe dispose de toutes les forces en proportions égales pour concevoir, lier, structurer et tester.";
+            risks = "Risque de neutralisation ou de débats sans fin. Sans polarité dominante, le groupe peut tourner en rond par manque de direction naturelle.";
+        }
         if (primary.count === secondary.count && primary.count > 0) {
             archetypeTitle = "Équipe Polarisée / Double Moteur";
             strengths = `Équilibre puissant et coexistence de deux forces majeures : les ${primary.name}s et les ${secondary.name}s. L'équipe possède un double moteur pour avancer.`;
