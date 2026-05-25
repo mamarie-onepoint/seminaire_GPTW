@@ -237,13 +237,6 @@
             }
         };
 
-        const teamProfiles = [
-            { id: "balanced", title: "Le Profil Équilibré (La Dream Team)", strengths: "L'entreprise est complète. Elle peut rêver (Visionnaire), inventer (Pionnier), lier (Connecteur) et stabiliser (Architecte).", risks: "Le risque majeur est la lenteur de décision. Trop de profils différents peuvent créer des débats sans fin.", advice: "Assurez-vous que chacun connaît le rôle de l'autre pour éviter les frustrations (ex: l'Architecte qui freine le Pionnier)." },
-            { id: "thinkers", title: "Le Profil 'Tête pensante' (Majorité de Visionnaires et/ou de Pionniers)", strengths: "Énorme capacité d'innovation, enthousiasme, agilité et créativité. L'entreprise est toujours en mouvement.", risks: "Le risque de \"burn-out de projet\". On lance 10 idées mais on n'en finit aucune. Manque de rigueur et de suivi.", advice: "Attention à l'éparpillement. Il est urgent de valoriser les rares Architectes du groupe pour transformer vos idées en résultats concrets." },
-            { id: "family", title: "Le Profil 'Famille' (Majorité de Connecteurs)", strengths: "Ambiance exceptionnelle, solidarité, entraide. Très peu de conflits ouverts.", risks: "Le risque du consensus mou. On n'ose pas se dire les choses qui fâchent pour ne pas briser le lien. Manque de direction claire ou de structure.", advice: "Ne confondez pas 'bonne ambiance' et 'efficacité'. Le groupe doit apprendre à challenger les idées et à accepter la confrontation constructive." },
-            { id: "fortress", title: "Le Profil 'Forteresse' (Excès d'Architectes)", strengths: "Organisation millimétrée, fiabilité totale, maîtrise des risques et des coûts.", risks: "La rigidité. L'entreprise peut devenir une administration lourde, incapable de s'adapter au changement ou de créer de l'émotion.", advice: "Lâchez prise ! Autorisez-vous des phases de test 'sales et rapides' sans chercher la perfection immédiate pour ne pas vous laisser dépasser par le marché." }
-        ];
-
         let currentQuestion = 0;
         let scores = { V: 0, C: 0, P: 0, A: 0 };
         let selectionsHistory = []; // Historique pour le bouton Retour
