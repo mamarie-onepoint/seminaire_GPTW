@@ -472,7 +472,7 @@ function showResult() {
             strengths = "Grande agilité culturelle. L'équipe dispose de toutes les forces en proportions égales pour concevoir, lier, structurer et tester.";
             risks = "Risque de neutralisation ou de débats sans fin. Sans polarité dominante, le groupe peut tourner en rond par manque de direction naturelle.";
         }
-        else if (primary.count === secondary.count && primary.count > 0 && secondary.count !== tertiary.count) { 
+        else if (primary.count === secondary.count && primary.count > 0 && secondary.count > tertiary.count) { 
             archetypeTitle = "Équipe Polarisée / Double Moteur";
             strengths = `Équilibre puissant et coexistence de deux forces majeures : les ${primary.name}s et les ${secondary.name}s. L'équipe possède un double moteur pour avancer.`;
             risks = `Risque de dualité ou de création de deux "clans" distincts au sein du groupe lors des prises de décisions. Les deux polarités peuvent se neutraliser si elles ne communiquent pas de manière fluide.`;
