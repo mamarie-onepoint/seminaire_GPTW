@@ -459,7 +459,14 @@ function showResult() {
         let risks = "Risque de débats prolongés. Les profils étant très répartis, les prises de décision peuvent être ralenties par manque de leadership naturel sur une polarité.";
         let workshopIdea = "";
 
-        if (primary.count > parseFloat(total * 0.4)) {
+        // --- CORRECTION DU TRI : GESTION DE L'ÉGALITÉ PARFAITE ---
+        if (primary.count === secondary.count && primary.count > 0) {
+            archetypeTitle = "Équipe Polarisée / Double Moteur";
+            strengths = `Équilibre puissant et coexistence de deux forces majeures : les ${primary.name}s et les ${secondary.name}s. L'équipe possède un double moteur pour avancer.`;
+            risks = `Risque de dualité ou de création de deux "clans" distincts au sein du groupe lors des prises de décisions. Les deux polarités peuvent se neutraliser si elles ne communiquent pas de manière fluide.`;
+        } 
+        // Si pas d'égalité parfaite, on applique la règle classique de dominance à 40%
+        else if (primary.count > parseFloat(total * 0.4)) {
             if (primary.type === 'V') {
                 archetypeTitle = "Équipe Inspirée / En quête de sens";
                 strengths = "Capacité unique à comprendre les enjeux, à anticiper l'avenir et à donner une direction claire aux projets.";
@@ -477,6 +484,7 @@ function showResult() {
                 strengths = "Robustesse absolue dans l'exécution, respect des jalons, maîtrise des risques et rigueur de déploiement.";
                 risks = "Résistance potentielle aux changements imprévus. Inertie face à l'urgence si les processus ne sont pas pré-établis.";
             }
+        }
         }
 
         // --- DEBUT DU SYSTEME EXHAUSTIF DE FRICTIONS ---
