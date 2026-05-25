@@ -237,6 +237,13 @@
             }
         };
 
+        const teamProfiles = [
+            { id: "balanced", title: "Le Profil Équilibré (La Dream Team)", strengths: "L'entreprise est complète. Elle peut rêver (Visionnaire), inventer (Pionnier), lier (Connecteur) et stabiliser (Architecte).", risks: "Le risque majeur est la lenteur de décision. Trop de profils différents peuvent créer des débats sans fin.", advice: "Assurez-vous que chacun connaît le rôle de l'autre pour éviter les frustrations (ex: l'Architecte qui freine le Pionnier)." },
+            { id: "thinkers", title: "Le Profil 'Tête pensante' (Majorité de Visionnaires et/ou de Pionniers)", strengths: "Énorme capacité d'innovation, enthousiasme, agilité et créativité. L'entreprise est toujours en mouvement.", risks: "Le risque de \"burn-out de projet\". On lance 10 idées mais on n'en finit aucune. Manque de rigueur et de suivi.", advice: "Attention à l'éparpillement. Il est urgent de valoriser les rares Architectes du groupe pour transformer vos idées en résultats concrets." },
+            { id: "family", title: "Le Profil 'Famille' (Majorité de Connecteurs)", strengths: "Ambiance exceptionnelle, solidarité, entraide. Très peu de conflits ouverts.", risks: "Le risque du consensus mou. On n'ose pas se dire les choses qui fâchent pour ne pas briser le lien. Manque de direction claire ou de structure.", advice: "Ne confondez pas 'bonne ambiance' et 'efficacité'. Le groupe doit apprendre à challenger les idées et à accepter la confrontation constructive." },
+            { id: "fortress", title: "Le Profil 'Forteresse' (Excès d'Architectes)", strengths: "Organisation millimétrée, fiabilité totale, maîtrise des risques et des coûts.", risks: "La rigidité. L'entreprise peut devenir une administration lourde, incapable de s'adapter au changement ou de créer de l'émotion.", advice: "Lâchez prise ! Autorisez-vous des phases de test 'sales et rapides' sans chercher la perfection immédiate pour ne pas vous laisser dépasser par le marché." }
+        ];
+
         let currentQuestion = 0;
         let scores = { V: 0, C: 0, P: 0, A: 0 };
         let selectionsHistory = []; // Historique pour le bouton Retour
@@ -459,14 +466,7 @@ function showResult() {
         let risks = "Risque de débats prolongés. Les profils étant très répartis, les prises de décision peuvent être ralenties par manque de leadership naturel sur une polarité.";
         let workshopIdea = "";
 
-        // --- CORRECTION DU TRI : GESTION DE L'ÉGALITÉ PARFAITE ---
-        if (primary.count === secondary.count && primary.count > 0) {
-            archetypeTitle = "Équipe Polarisée / Double Moteur";
-            strengths = `Équilibre puissant et coexistence de deux forces majeures : les ${primary.name}s et les ${secondary.name}s. L'équipe possède un double moteur pour avancer.`;
-            risks = `Risque de dualité ou de création de deux "clans" distincts au sein du groupe lors des prises de décisions. Les deux polarités peuvent se neutraliser si elles ne communiquent pas de manière fluide.`;
-        } 
-        // Si pas d'égalité parfaite, on applique la règle classique de dominance à 40%
-        else if (primary.count > parseFloat(total * 0.4)) {
+        if (primary.count > parseFloat(total * 0.4)) {
             if (primary.type === 'V') {
                 archetypeTitle = "Équipe Inspirée / En quête de sens";
                 strengths = "Capacité unique à comprendre les enjeux, à anticiper l'avenir et à donner une direction claire aux projets.";
@@ -484,7 +484,6 @@ function showResult() {
                 strengths = "Robustesse absolue dans l'exécution, respect des jalons, maîtrise des risques et rigueur de déploiement.";
                 risks = "Résistance potentielle aux changements imprévus. Inertie face à l'urgence si les processus ne sont pas pré-établis.";
             }
-        }
         }
 
         // --- DEBUT DU SYSTEME EXHAUSTIF DE FRICTIONS ---
