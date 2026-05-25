@@ -567,7 +567,16 @@ function showResult() {
         
         document.getElementById('team-strengths').innerText = strengths;
         document.getElementById('team-risks').innerText = risks;
-        document.getElementById('team-advice').innerHTML = finalAdviceHTML;
+        
+        // --- INTEGRATION DU CONSEIL 1 : GESTION DYNAMIQUE DU BLOC BLEU ---
+        const adviceBlock = document.getElementById('team-advice').parentElement;
+        if (finalAdviceHTML === "") {
+            adviceBlock.classList.add('hidden'); // Masque le bloc bleu s'il n'y a rien à afficher
+        } else {
+            adviceBlock.classList.remove('hidden'); // L'affiche s'il y a des frictions
+            document.getElementById('team-advice').innerHTML = finalAdviceHTML;
+        }
+        // --- FIN DU CONSEIL 1 ---
 
         // 3. Alerte profils manquants
         const list = document.getElementById('missing-list');
